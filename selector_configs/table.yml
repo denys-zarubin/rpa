@@ -1,0 +1,10 @@
+results:
+    css: null
+    xpath: "//table[@id='investments-table-object']//tbody//tr"
+    multiple: true
+    type: Text
+    children:
+        uii:
+            css: null
+            xpath: "//td[@class='left sorting_2']"
+            type: Text

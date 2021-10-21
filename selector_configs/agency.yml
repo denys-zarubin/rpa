@@ -1,0 +1,14 @@
+results:
+    css: null
+    xpath: "//div[@id='agency-tiles-container']//div[@class='col-sm-12']"
+    multiple: true
+    type: Text
+    children:
+        title:
+            css: span.h4
+            xpath: null
+            type: Text
+        amount:
+            css: span.h1
+            xpath: null
+            type: Text
