@@ -5,6 +5,7 @@ from controllers.pagescrapper import AgencyParser, InvestmentParser, browser_ope
 from controllers.aggreagator import merge_data_to_xls
 from multiprocessing.pool import Pool
 from functools import partial
+from distutils.util import strtobool
 
 
 def get_path():
@@ -29,9 +30,15 @@ def run():
         results_path=path,
 
     )
-    with Pool(2) as p:
-        download_and_open = partial(browser_open_and_download_page, path)
-    p.map(download_and_open, investment_data.links)
+    enabled_multiporcessing = strtobool(
+        os.environ.get("ENABLED_MULTIPROSSING", 'false'))
+    download_and_open = partial(browser_open_and_download_page, path)
+    if enabled_multiporcessing:
+        with Pool(2) as p:
+            p.map(download_and_open, investment_data.links)
+    else:
+        for item in investment_data.links:
+            download_and_open(item)
 
     merge_data_to_xls("agency", path, agency_data.data, investment_data.data)
 
