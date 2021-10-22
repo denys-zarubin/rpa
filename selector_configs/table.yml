@@ -8,3 +8,9 @@ results:
             xpath: '//td[@class]'
             multiple: true
             type: Text
+hrefs:
+    css: null
+    xpath: '//table[@id=''investments-table-object'']//tbody//tr//td//a'
+    multiple: true
+    type: Text
+    

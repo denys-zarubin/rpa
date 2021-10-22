@@ -112,11 +112,11 @@ class InvestmentParser(BaseWebParser, ItDashboardParserMixin):
         self.open_dive_in()
         self.open_agency_page()
         page = self.open_all_selected_table()
-        data = self.parse_page(page, self.selector_config_path)
-        data = self.serialize_data(data)
+        initial_data = self.parse_page(page, self.selector_config_path)
+        data = self.serialize_data(initial_data)
         self.data = pd.DataFrame(
             data, columns=['UII', "Bureau", "Investment Title", "Total", "Type", "Cio Rating", "Number of project"])
-        self.links = self.get_links(self.data['UII'])
+        self.links = self.get_links(initial_data.get('hrefs'))
 
     def open_agency_page(self):
         xpath = f"{self.parent_xpath}//span[.='{self.agency_title}']/../../..//a[.='view']"
@@ -135,11 +135,6 @@ class InvestmentParser(BaseWebParser, ItDashboardParserMixin):
     def get_pdf_base_url(self, current_location):
         agency_id = current_location.split("/")[-1]
         return f"https://itdashboard.gov/drupal/summary/{agency_id}/"
-
-    def get_pdf_base_urls(self, uiis):
-        base_url = self.get_pdf_base_url(self.browser.get_location())
-        links = [("url", f"{base_url}{x.get('uii')}") for x in uiis]
-        return links
 
     def get_links(self, uiis):
         base_url = self.get_pdf_base_url(self.browser.get_location())
