@@ -30,17 +30,15 @@ def run():
         results_path=path,
 
     )
-    enabled_multiporcessing = strtobool(
-        os.environ.get("ENABLED_MULTIPROSSING", 'false'))
-    download_and_open = partial(browser_open_and_download_page, path)
-    if enabled_multiporcessing:
+    merge_data_to_xls("agency", path, agency_data.data, investment_data.data)
+
+    if strtobool(os.environ.get("ENABLED_MULTIPROSSING", 'false')):
         with Pool(2) as p:
+            download_and_open = partial(browser_open_and_download_page, path)
             p.map(download_and_open, investment_data.links)
     else:
         for item in investment_data.links:
-            download_and_open(item)
-
-    merge_data_to_xls("agency", path, agency_data.data, investment_data.data)
+            browser_open_and_download_page(path, item)
 
 
 if __name__ == "__main__":
