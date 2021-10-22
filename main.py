@@ -29,9 +29,9 @@ def run():
         results_path=path,
 
     )
-    with Pool(2) as p:
-        download_and_open = partial(browser_open_and_download_page, path)
-        p.map(download_and_open, investment_data.links)
+    # with Pool(2) as p:
+    #     download_and_open = partial(browser_open_and_download_page, path)
+    # p.map(download_and_open, investment_data.links)
 
     merge_data_to_xls("agency", path, agency_data.data, investment_data.data)
 
