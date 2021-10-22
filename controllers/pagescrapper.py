@@ -24,9 +24,9 @@ def browser_open_and_download_page(path, page_url):
         page_url, preferences=preferences)
     try:
         xpath = "//div[@id='business-case-pdf']//a"
-        browser.wait_until_element_is_enabled(xpath, 10)
+        browser.wait_until_element_is_enabled(xpath, 20)
         browser.click_element_when_visible(xpath)
-        time.sleep(5)
+        time.sleep(15)
         browser.close_window()
     except:
         browser.close_window()
