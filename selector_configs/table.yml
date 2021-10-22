@@ -1,10 +1,10 @@
 results:
     css: null
-    xpath: "//table[@id='investments-table-object']//tbody//tr"
-    multiple: true
+    xpath: '//tr[@role=''row'' and @class=''even'' or @class=''odd'']'
     type: Text
     children:
-        uii:
+        values:
             css: null
-            xpath: "//td[@class='left sorting_2']"
+            xpath: '//td[@class]'
+            multiple: true
             type: Text

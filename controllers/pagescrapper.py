@@ -11,10 +11,10 @@ from RPA.Browser.Selenium import Selenium
 from selectorlib import Extractor
 
 
-def browser_open_page(page_url):
+def browser_open_and_download_page(path, page_url):
     """Default opener for page."""
     preferences = {
-        "download.default_directory": "/asfsa/",
+        "download.default_directory": f"{path}",
         "plugins.always_open_pdf_externally": True,
         "download.directory_upgrade": True,
         "download.prompt_for_download": False,
@@ -22,6 +22,14 @@ def browser_open_page(page_url):
     browser = Selenium()
     browser.open_chrome_browser(
         page_url, preferences=preferences)
+    try:
+        xpath = "//div[@id='business-case-pdf']//a"
+        browser.wait_until_element_is_enabled(xpath, 50)
+        browser.click_element_when_visible(xpath)
+        time.sleep(20)
+        browser.close_window()
+    except:
+        browser.close_window()
 
 
 @dataclass
@@ -48,7 +56,6 @@ class BaseWebParser:
         }
         self.browser.open_chrome_browser(
             page_url, preferences=preferences)
-        return 1
 
     def create_results_folder(self):
         """Try to folder where the results will be stored."""
@@ -105,8 +112,11 @@ class InvestmentParser(BaseWebParser, ItDashboardParserMixin):
         self.open_dive_in()
         self.open_agency_page()
         page = self.open_all_selected_table()
-        self.data = self.parse_page(page, self.selector_config_path)
-        self.open_all_pages_with_pdfs(self.data.get("results"))
+        data = self.parse_page(page, self.selector_config_path)
+        data = self.serialize_data(data)
+        self.data = pd.DataFrame(
+            data, columns=['UII', "Bureau", "Investment Title", "Total", "Type", "Cio Rating", "Number of project"])
+        self.links = self.get_links(self.data['UII'])
 
     def open_agency_page(self):
         xpath = f"{self.parent_xpath}//span[.='{self.agency_title}']/../../..//a[.='view']"
@@ -131,20 +141,13 @@ class InvestmentParser(BaseWebParser, ItDashboardParserMixin):
         links = [("url", f"{base_url}{x.get('uii')}") for x in uiis]
         return links
 
-    def open_all_pages_with_pdfs(self, uiis):
-        print(uiis)
+    def get_links(self, uiis):
         base_url = self.get_pdf_base_url(self.browser.get_location())
-        links = [f"{base_url}{x.get('uii')}" for x in uiis]
-        for link in links:
-            self.browser_open_page(link)
-            self.open_donwload_pdf()
+        links = [f"{base_url}{x}" for x in uiis]
+        return links
 
-    def open_donwload_pdf(self):
-        try:
-            xpath = "//div[@id='business-case-pdf']//a"
-            self.browser.wait_until_element_is_enabled(xpath, 45)
-            self.browser.click_element_when_visible(xpath)
-            time.sleep(5)
-            self.browser.close_window()
-        except:
-            return
+    def serialize_data(self, data):
+        import numpy as np
+        values = data.get("results", {}).get("values", [])
+        data_massives = np.array_split(values, len(values)/7)
+        return data_massives
