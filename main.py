@@ -35,11 +35,6 @@ def run():
 
 
     )
-    investments_dataframe_merged = merge_investments_dataframe_with_pdfdataframe(
-        investment_data.data, pdf_data.data)
-
-    merge_data_to_xls("agency", path, agency_data.data,
-                      investments_dataframe_merged)
 
     if strtobool(os.environ.get("ENABLED_MULTIPROSSING", 'true')):
         with Pool(3) as p:
@@ -48,6 +43,11 @@ def run():
     else:
         for item in investment_data.links:
             browser_open_and_download_page(path, item)
+
+    investments_dataframe_merged = merge_investments_dataframe_with_pdfdataframe(
+        investment_data.data, pdf_data.data)
+    merge_data_to_xls("agency", path, agency_data.data,
+                      investments_dataframe_merged)
 
 
 if __name__ == "__main__":
