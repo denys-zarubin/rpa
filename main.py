@@ -22,7 +22,6 @@ def run():
     Default runner for parsing data
     """
     path = get_path()
-    pdf_data = PDFParser(path=path)
 
     agency_data = AgencyParser(
         parent_xpath="//div[@id='agency-tiles-container']//div[@class='tuck-5']/div[@class='row top-gutter-20']",
@@ -44,6 +43,7 @@ def run():
         for item in investment_data.links:
             browser_open_and_download_page(path, item)
 
+    pdf_data = PDFParser(path=path)
     investments_dataframe_merged = merge_investments_dataframe_with_pdfdataframe(
         investment_data.data, pdf_data.data)
     merge_data_to_xls("agency", path, agency_data.data,
